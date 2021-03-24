@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<body>
+<style>
+html, body {margin: 0; padding: 0; background: black; width: 500px;height: 100%;}
+body {
+    color: white;
+    font-family: Roboto;
+    font-family: Inter,Roobert,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-family: Lato;
+    font-weight: 800;
+    font-size: 16px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.push {
+    height: 100%;
+}
+message {
+    display: flex;
+    margin: 10px 0;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all .2s;
+}
+message.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+message.notification {
+    font-style: italic;
+    color: cyan;
+    position: relative;
+}
+
+name {
+    flex:0.35;
+    text-align: right;
+    font-weight: 900;
+    /* overflow: hidden; */
+    text-overflow: ellipsis;
+}
+
+.system name {
+    text-decoration:underline;
+}
+content {
+    flex:0.65;
+    overflow:hidden;
+    margin-left: 10px;
+    /* word-break: break-all; */
+    word-wrap: break-word;
+    white-space: normal;
+    hyphens: auto;
+}
+.image {
+    max-width: 100%;
+    max-height: 500px;
+    width:auto;
+    height: auto;
+    image-rendering: optimizeQuality;
+    display: block;
+    margin: 10px 0;
+}
+.emote {
+    vertical-align: middle;
+    max-height: 30px;
+    margin: 0 5px;
+    image-rendering: optimizeQuality;
+}
+.empty .emote {
+    max-width: 40px;
+}
+.rank {
+    height: 18px;
+    position: relative;
+    top: -1px;
+    image-rendering: crisp-edges;
+    margin: 0;
+    margin-right: 4px;
+}
+sponso {
+    display: inline-block;
+    background: yellow;
+    padding: 3px;
+    border-radius: 3px;
+    color: black;
+    font-size: 12px;
+    font-weight: bold;
+
+}
+
+u {text-decoration: underline;}
+i, e {display:none}
+
+
+.stats {
+    color: #ff169d;
+    background: #fcef18;
+    font-size: 50px;
+    font-family: Venture13;
+    position: absolute;
+    top: 40px;
+    font-weight: 300;
+    text-align: right;
+    width: 400px;
+    left: 900px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+
+}
+.stats input {
+    display: inline-block;
+    appearance: none;
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    min-width: 0;
+    border: 0;
+    text-align: right;
+    outline: none;
+}
+.stats.one {
+    left: 400px;
+}
+.stats span {
+    display: inline-block;
+    width: 48px;
+    left: 600px;
+}
+#viewers {
+    flex-shrink: 0;
+}
+#subscribers {
+    flex-shrink: 0;
+}
+</style>
+
+
+
+<script>
+    var request = new XMLHttpRequest();
+    request.open('GET', 'chat.html', true);
+    request.onload = function() {
+      if (this.status >= 200 && this.status < 400) {
+        parse(this.response)
+      }
+    }
+    request.send()
+
+    var VIEWERS = 64000,
+        SUBSCRIBERS = 4200
+
+    var MESSAGES = []
+    var NAMES = {
+        TBV : "<e>modo</e>TheBuccalVoice",
+        vlv : "V-le-VaXXin",
+        Nano : "<e>streamer</e>Big MC Nano",
+        Missy: "<e>streamer</e>Missy",
+        GdT : "<e>prime</e>Gamble D Trump",
+        YAR : "<e>modo</e>Yasser A Rafaal",
+        Wish : "<e>gift</e>Wish Khalifa",
+        Lidl : "<e>gift</e>Lidl Wayne",
+        pN : "<e>pascal</e>pascalHaine",
+        GmB :" <e>prime</e>Gettho-My-Bleno",
+        System : "<e>modo</e>SystiteBot",
+        uD : "ultraD3v0t",
+        jS : " <e>ierank</e><e>angers</e> Joël Salé",
+    }
+    var IMAGES = {
+        tbl : 'the-buccal-logo.png',
+        smp_psf : 'SM_PSF.gif',//'BashEric_SMP.png',
+        t_p1 : 'Twish-petos.png',
+        t_p2 : 'Twish-petos2.png',
+        t_pi : 'Twish-pipa.png',
+        t_sh : 'Twish-shilom.png',
+        t_txt : 'Twish-text.png',
+        Kappa: 'Kappa.png',
+        Kapp: 'Kapp.png',
+        WutFace: 'wutface.png',
+        D: 'gasp.png',
+        '4Head': '4head.png',
+        '5Head': '5Head.png',
+        CoolStoryBob: 'bobross.png',
+        DansGame: 'dansgame.png',
+        NotLikeThis: 'notlikethis.png',
+        PogChamp: 'pogchamp.png',
+        PogU: 'PogU.png',
+        Pog: 'Pog.png',
+        POGGERS: 'POGGERS.png',
+        WeirdChamp: 'WeirdChamp.png',
+        catJAM: 'catJAM.gif',
+        KEKW: 'KEKW.png',
+        LULW: 'LULW.png',
+        LUL: 'LUL.png',
+        OMEGALUL: 'OMEGALUL.png',
+        PepeLaugh: 'PepeLaugh.png',
+        Pepega: 'Pepega.png',
+        Clap: 'Clap.gif',
+        SeriousSloth: 'SeriousSloth.png',
+        TriHard: 'TriHard.png',
+        Sadge: 'Sadge.png',
+        BibleThump: 'BibleThump.png',
+        Kreygasm: 'Kreygasm.png',
+        Jebaited: 'Jebaited.png',
+        YEP: 'YEP.png',
+        '<3': 'heart.png',
+        '&lt;3': 'heart.png',
+        monkaW: 'monkaW.png',
+        monkaS: 'monkaS.png',
+        KKona: 'KKona.png',
+        AYAYA: 'AYAYA.png',
+        FeelsGoodMan: 'FeelsGoodMan.png',
+        FeelsWeirdMan: 'FeelsWeirdMan.png',
+        FeelsDankMan: 'FeelsDankMan.png',
+    }
+    var COLORS = {},
+        FCOLORS = ["red", "green", "#40b7b5", "blue", "purple", "#aa9929"]
+
+    for (let name in NAMES) {
+        COLORS[name] = `hsl(${Math.round(360*Math.random())}, 100%, 65%)`
+    }
+
+    COLORS.Missy = 'pink'
+    COLORS.Nano = 'yellow'
+    COLORS.System = 'red'
+    console.log(COLORS)
+
+    var RANDNAME_PRE = [
+        "crazy", "universal", "sick", "insane", "cool", "fun", "mad", "generic",
+        "Cpt", "nice", "adolf", "Dan", "Wizard", "faceless", "olof",
+        "best_", "daddy", "mama", "mister_", "davai", "Nick", "de_", "the_", "iAm",
+        "Loungin", "extra", "BOT", "dirty", "devil", "Only"];
+
+    var RANDNAME_POST = [
+        "Kappa", "Sniper", "marshmellow", "Shrek", "M", "LUL", "Games", "HD", "lolo",
+        "_yolo", "QQ", "stone", "Trump", "xD", "meister", "eric", "james", "loser",
+        "haha", "noob", "dude", "Bro", "shotgun", "DADDY", "OneTaps", "winner",
+        "xx", "pepe", "explosion", "easy", "Nut", "000", "Biceps", "gamer", "Majestic",
+        "zzzzz", "vortex", "sound", "tv"];
+
+    var RANDOM_MESSAGE = [
+        "WTF", "LUL", "holy shit","SAVED <e>rotaryclub-club.jpg</e><e>rotaryclub-club.jpg</e><e>rotaryclub-club.jpg</e>",
+        "ez bro", "GG", "<e>Kappa</e>", "<e>4Head</e>", "WHAT", "<e>PogChamp</e>", "<e>PogChamp</e> <e>PogChamp</e> <e>PogChamp</e> <e>PogChamp</e> <e>PogChamp</e>",
+        "<e>kaaris</e>", "<e>kaaris</e> <e>kaaris</e> <e>kaaris</e>", "<e>booba</e>", "<e>booba</e><e>booba</e><e>booba</e>", "<e>Pog</e>", "<e>PogU</e>", "<e>catJam</e>", "<e>PogU</e> <e>Clap</e>",
+        "<e>5Head</e>", "300 IQ", "<e>Jebaited</e>", "<e>FeelsGoodMan</e>", "<e><3</e>", "<e>booba</e>","<e>booba</e> <e>kaaris</e>",
+        "BOT!!!", "BOT!", "BOT!!", "BOT", "OMG BOT!!!!!", "wuuut ???",
+        "LUL", "HAHAHAHA", "OMG", "LMAO", "so bad omg", "xD", "gg", "RUINED", "<e>Kappa</e>", "<e>WutFace</e>",
+        "<e>notlikethis</e>", "<e>4Head</e>", "<e>OMEGALUL</e>", "<e>OMEGALUL</e> <e>Clap</e>", "<e>BibleThump</e>",
+        "<e>KEKW</e>", "<e>Pepega</e>", "D:", "<e>WeirdChamp</e>", "<e>monkaS</e>"];
+
+
+    var NOTES = ["𝅘𝅥", "𝅘𝅥𝅮", "𝅘𝅥𝅯", "𝅘𝅥𝅰", "𝅘𝅥𝅱"]
+
+    function randomMessage(){
+
+        var name = RANDNAME_PRE[Math.round(Math.random()* (RANDNAME_PRE.length-1))] + RANDNAME_POST[Math.round(Math.random()* (RANDNAME_POST.length-1))],
+            message = RANDOM_MESSAGE[Math.round(Math.random()* (RANDOM_MESSAGE.length-1))]
+        addMessage(`<m name="${name}">${message}</m>`)
+    }
+
+
+    function addMessage(message) {
+
+        if (typeof message == 'string') {
+            _ = document.createElement('div')
+            _.innerHTML = message
+            message = _.firstChild
+        }
+        let html = document.createElement('message'),
+            name = message.getAttribute('name'),
+            content = message.innerHTML
+            color = COLORS[name] || FCOLORS[(name.charCodeAt(0) + name.length) % FCOLORS.length]
+
+            console.log(color)
+        if (message.tagName == 'N' ) html.classList.add('notification')
+        if (name == 'System') html.classList.add('system')
+        if (NAMES[name]) name = NAMES[name]
+
+
+        var nhtml = html.appendChild(document.createElement('name'))
+        var chtml = html.appendChild(document.createElement('content'))
+
+
+        if (!chtml.textContent) chtml.classList.add('empty')
+        // content = content.replace(/\@([a-Z]+)\s/g, (m, n)=>{
+        //     var name = NAMES[n] || n
+        //     return '@' + name
+        // })
+        content = content.replace(/##melody##/g, (m, n)=>{
+            var amount = Math.random() * 18, melody = ''
+            for (var i = 0; i<amount; i++) {
+                melody += `
+                    &nbsp;&nbsp;<span style="font-weight:bold;color:hsl(${Math.random()*360},100%,50%)">${NOTES[Math.round(Math.random() * NOTES.length) % NOTES.length]}</span>`
+            }
+
+            return melody
+        })
+
+        content = content.replace(/\$\$(.*)\$\$/g, (m, match)=>{
+
+            return `<sponso>${match}</sponso>`
+        })
+
+        content = content.replace(/\<private\>/g, (m, match)=>{
+            return `<span class="private">PM: </span>`
+        })
+
+        content = content.replace(/https?:\/\/[^\s]+\.com/g, (m, match)=>{
+            return `<u>${m}</u>`
+        })
+
+
+        nhtml.innerHTML = name
+        chtml.innerHTML = content
+
+        if (color) nhtml.style.color = color
+        console.log(name, content)
+
+        for (let i of chtml.getElementsByTagName('i')) {
+            var ihtml = document.createElement('img'),
+                src = i.innerHTML
+            ihtml.classList.add('image')
+            var src = IMAGES[src] ||src
+            if (!src.includes('.')) src += '.png'
+            ihtml.src = src
+            chtml.insertBefore(ihtml, i)
+        }
+
+        for (let i of chtml.getElementsByTagName('e')) {
+            var ihtml = document.createElement('img'),
+                src = i.innerHTML
+            ihtml.classList.add('emote')
+            var src = IMAGES[src] ||src
+            if (!src.includes('.')) src += '.png'
+            ihtml.src = src
+            chtml.insertBefore(ihtml, i)
+
+        }
+
+        for (let i of nhtml.getElementsByTagName('e')) {
+            var ihtml = document.createElement('img'),
+                src = i.innerHTML
+            ihtml.classList.add('emote')
+            ihtml.classList.add('rank')
+            var src = IMAGES[src] ||src
+            if (!src.includes('.')) src += '.png'
+            ihtml.src = src
+            nhtml.insertBefore(ihtml, i)
+
+        }
+
+        MESSAGES.push(html)
+
+        document.body.appendChild(html)
+        setTimeout(()=>{
+            document.body.scrollIntoView({behavior: 'auto', block: 'end'})
+            setTimeout(()=>{
+            html.classList.add('show')
+            })
+        })
+
+    }
+
+    var RAW_MESSAGES = []
+    function parse(datastr) {
+        var data = document.createElement('div')
+        data.innerHTML = datastr
+
+        for (let message of data.childNodes) {
+
+            if (message.tagName) {
+
+                RAW_MESSAGES.push(message)
+                // addMessage(message)
+
+            }
+
+        }
+        setTimeout(()=>{
+            nextMessage()
+            nextBotMessage()
+        }, 2000)
+
+
+    }
+
+    var i = 0, t = 0
+    function nextMessage() {
+        addMessage(RAW_MESSAGES[i++])
+        t = 100 + Math.random() * 900
+        if (i < 5) t += 500
+        setTimeout(nextMessage, t)
+    }
+
+    function nextBotMessage() {
+        if (Math.random() > 0.85) randomMessage()
+        setTimeout(nextBotMessage, Math.random() * 1000)
+    }
+
+
+    // setInterval(()=>{
+    //
+    //     var dV = Math.random() < 0.55 ? 1 : -1,
+    //         dS = Math.random() < 0.52 ? 1 : -1
+    //
+    //     if (Math.random() <0.08) dV *= 8000
+    //     if (Math.random() <0.04) dS *= 2000
+    //
+    //     if (Math.random() <0.1) dV = 0
+    //     if (Math.random() <0.2) dS = 0
+    //
+    //     VIEWERS += Math.random() * 5 * dV
+    //     SUBSCRIBERS +=  Math.random() * 1 * dS
+    //
+    //     if (VIEWERS < 1000) VIEWERS += 800
+    //     if (SUBSCRIBERS < 1000) SUBSCRIBERS += 800
+    //
+    //     var sV = String(Math.round(VIEWERS))
+    //         sS = String(Math.round(SUBSCRIBERS))
+    //
+    //     if (sV > 100000) sV = Math.round(sV/10)/100 + 'k'
+    //     if (sS > 100000) sS = Math.round(sV/10)/100 + 'k'
+    //
+    //     sV = sV.replace(/([0-9])/g, "<span>$1</span>")
+    //     sS = sS.replace(/([0-9])/g, "<span>$1</span>")
+    //
+    //     document.getElementById('viewers').innerHTML = sV
+    //     document.getElementById('subscribers').innerHTML = sS
+    //
+    // }, 25)
+
+
+
+
+
+</script>
+<!-- <div class="stats one"><input/><div id="viewers"></div></div>
+<div class="stats two"><input/><div id="subscribers"></div></div> -->
+
+</body>
+</html>
