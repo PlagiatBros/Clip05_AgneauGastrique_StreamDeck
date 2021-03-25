@@ -142,6 +142,12 @@ i, e {display:none}
 
 
 <script>
+    var ENV = {}
+    location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, (s,k,v)=>{
+        ENV[k]=v
+    })
+    if (ENV.debug) document.body.style.height = 'auto'
+
     var request = new XMLHttpRequest();
     request.open('GET', 'chat.html', true);
     request.onload = function() {
@@ -375,15 +381,20 @@ i, e {display:none}
             if (message.tagName) {
 
                 RAW_MESSAGES.push(message)
-                // addMessage(message)
+                if (ENV.debug) {
+                    addMessage(message)
+                }
 
             }
 
         }
-        setTimeout(()=>{
-            nextMessage()
-            nextBotMessage()
-        }, 2000)
+
+        if (!ENV.debug) {
+            setTimeout(()=>{
+                nextMessage()
+                nextBotMessage()
+            }, 2000)
+        }
 
 
     }
