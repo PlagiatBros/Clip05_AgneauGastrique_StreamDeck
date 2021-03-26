@@ -2,7 +2,11 @@
 <html lang="fr">
 <body>
 <style>
-html, body {margin: 0; padding: 0; background: black; width: 500px;height: 100%;}
+html, body {margin: 0; padding: 0; background: black; }
+html {
+    width: 100%;
+    height: 100%;
+}
 body {
     color: white;
     font-family: Roboto;
@@ -14,16 +18,21 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    width: 520px;height: 800px;
+    overflow: auto;
+    box-shadow: 0 0 0 1px red;
+    margin: 20px;
 }
 .push {
     height: 100%;
 }
 message {
+    width: 500px;
     display: flex;
     margin: 10px 0;
     opacity: 0;
-    transform: translateX(20px);
-    transition: all .2s;
+    transform: translateX(50px);
+    transition: transform .1s, opacity 0.2s;
 }
 message.show {
     opacity: 1;
@@ -195,7 +204,10 @@ wesh {
     margin-top: 40px;
 }
 .cat-what content  {
-    color: #eee
+    color: #eee;
+    background: #333;
+    padding: 3px 5px 1px;
+    border-radius: 3px;
 }
 
 .cat-info content  {
@@ -210,7 +222,7 @@ wesh {
 .cat-website content  {
     color: yellow;
     font-size: 150%;
-    text-align: center;
+    /* text-align: center; */
 }
 .cat-skred content  {
 
@@ -333,7 +345,7 @@ wesh {
         "zzzzz", "vortex", "sound", "tv"];
 
     var RANDOM_MESSAGE = [
-        "WTF", "LUL", "holy shit","SAVED <e>rotaryclub-club.jpg</e><e>rotaryclub-club.jpg</e><e>rotaryclub-club.jpg</e>",
+        "WTF", "LUL", "holy shit","SAVED <e>rotary-club.jpg</e><e>rotary-club.jpg</e><e>rotary-club.jpg</e>",
         "ez bro", "GG", "<e>Kappa</e>", "<e>4Head</e>", "WHAT", "<e>PogChamp</e>", "<e>PogChamp</e> <e>PogChamp</e> <e>PogChamp</e> <e>PogChamp</e> <e>PogChamp</e>",
         "<e>kaaris</e>", "<e>kaaris</e> <e>kaaris</e> <e>kaaris</e>", "<e>booba</e>", "<e>booba</e><e>booba</e><e>booba</e>", "<e>Pog</e>", "<e>PogU</e>", "<e>catJam</e>", "<e>PogU</e> <e>Clap</e>",
         "<e>5Head</e>", "300 IQ", "<e>Jebaited</e>", "<e>FeelsGoodMan</e>", "<e><3</e>", "<e>booba</e>","<e>booba</e> <e>kaaris</e>",
@@ -457,13 +469,16 @@ wesh {
 
         document.body.appendChild(html)
         setTimeout(()=>{
-            document.body.scrollIntoView({behavior: 'auto', block: 'end'})
+            document.body.scrollIntoView({behavior: 'smooth', block: 'end'})
             setTimeout(()=>{
             html.classList.add('show')
             })
         })
 
     }
+
+
+    var i = 0, t = 0, iGenerique = -1, iGenerique2 = -1
 
     var RAW_MESSAGES = []
     function parse(datastr) {
@@ -485,6 +500,10 @@ wesh {
 
         if (!ENV.debug) {
             setTimeout(()=>{
+                iGenerique = RAW_MESSAGES.findIndex(m=>m.innerHTML.match('Ca marche Léa'))
+                iGenerique2 = RAW_MESSAGES.findIndex(m=>m.innerHTML.match('LE GÉNÉRIQUE COMMENCE ICI'))
+                if (ENV.generique) i+= ENV.generique == 2 ? iGenerique2 : iGenerique
+                if (ENV.offset) i+= parseInt(ENV.offset)
                 nextMessage()
                 nextBotMessage()
             }, 2000)
@@ -493,16 +512,32 @@ wesh {
 
     }
 
-    var i = 0, t = 0
     function nextMessage() {
-        addMessage(RAW_MESSAGES[i++])
-        t = 100 + Math.random() * 900
-        if (i < 5) t += 500
+        var m = RAW_MESSAGES[i++]
+        addMessage(m)
+
+        if (i>=iGenerique2) {
+            t = 350 + Math.random() * 900
+        } else if (i>=iGenerique) {
+            t = 200 + Math.random() * 900
+        } else {
+            t = 100 + Math.random() * 900
+            if (i < 5) t += 500
+        }
+
+        if (m.innerHTML.length > 300) {
+            t+= (m.innerHTML.length - 300) * 5
+        }
+
         setTimeout(nextMessage, t)
     }
 
     function nextBotMessage() {
-        if (Math.random() > 0.85) randomMessage()
+        if (i>=iGenerique) {
+            if (Math.random() > 0.95) randomMessage()
+        } else {
+            if (Math.random() > 0.85) randomMessage()
+        }
         setTimeout(nextBotMessage, Math.random() * 1000)
     }
 
