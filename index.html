@@ -36,7 +36,8 @@ message.notification {
 }
 
 name {
-    flex:0.35;
+    /* flex:0.35; */
+    width: 164px;
     text-align: right;
     font-weight: 900;
     /* overflow: hidden; */
@@ -47,7 +48,7 @@ name {
     text-decoration:underline;
 }
 content {
-    flex:0.65;
+    flex:1;
     overflow:hidden;
     margin-left: 10px;
     /* word-break: break-all; */
@@ -94,7 +95,9 @@ sponso {
 
 u {text-decoration: underline;}
 i, e {display:none}
-
+big {
+    font-size: 140%;
+}
 
 .stats {
     color: #ff169d;
@@ -137,6 +140,81 @@ i, e {display:none}
 #subscribers {
     flex-shrink: 0;
 }
+
+.cat, .cat content {
+    font-style: normal;
+}
+.cat-band content {
+    text-align: center;
+    font-family: monospace;
+    font-size: 180%;
+    margin: 80px 0 0px;
+}
+wesh {
+    font-family: Blackout;
+    font-size: 180%;
+    display: inline-block;
+    border-radius: 3px;
+    overflow: hidden;
+    padding: 0 40px;
+
+}
+.cat-titre {
+    margin: 80px 0;
+}
+.cat-titre content  {
+    font-family: The Breakdown;
+    letter-spacing: 3px;
+    font-size: 32px;
+    text-align: center;
+    text-shadow: 0 0 8px;
+    color: yellow;
+
+}
+.cat-titre big {
+    letter-spacing: 8px;
+    color:#ff169d;
+
+}
+.cat-band content  {
+}
+.cat-who content  {
+    padding-left: 20px;
+    color: pink;
+}
+
+.subcat {
+    margin-top:0;
+}
+.subcat content {
+    padding-left: 40px;
+}
+
+
+.cat-what {
+    margin-top: 40px;
+}
+.cat-what content  {
+    color: #eee
+}
+
+.cat-info content  {
+
+}
+.cat-copyright content  {
+
+}
+.cat-website content  {
+
+}
+.cat-skred content  {
+
+}
+
+.cat-skred {
+
+}
+
 </style>
 
 
@@ -233,6 +311,7 @@ i, e {display:none}
     COLORS.Missy = 'pink'
     COLORS.Nano = 'yellow'
     COLORS.System = 'red'
+    COLORS.Generique = '#333'
     console.log(COLORS)
 
     var RANDNAME_PRE = [
@@ -291,6 +370,16 @@ i, e {display:none}
         var chtml = html.appendChild(document.createElement('content'))
 
 
+        if (message.getAttribute('cat')) {
+            html.classList.add('cat')
+            html.classList.add('cat-'+message.getAttribute('cat'))
+        }
+        if (message.getAttribute('subcat')) {
+            html.classList.add('subcat')
+            html.classList.add('subcat-'+message.getAttribute('subcat'))
+        }
+
+
         if (!chtml.textContent) chtml.classList.add('empty')
         // content = content.replace(/\@([a-Z]+)\s/g, (m, n)=>{
         //     var name = NAMES[n] || n
@@ -315,7 +404,7 @@ i, e {display:none}
             return `<span class="private">PM: </span>`
         })
 
-        content = content.replace(/https?:\/\/[^\s]+\.com/g, (m, match)=>{
+        content = content.replace(/https?:\/\/[^\s]+\.[a-z]{2,3}/g, (m, match)=>{
             return `<u>${m}</u>`
         })
 
